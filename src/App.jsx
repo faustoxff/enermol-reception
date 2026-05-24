@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { toast } from "sonner";
 import Layout from "./components/layouts/Layout";
 import NuevaRecepcion from "./pages/NuevaRecepcion";
 import ListadoRecepciones from "./pages/ListadoRecepciones";
@@ -40,7 +41,7 @@ function App() {
     const { error } = await supabase.auth.signOut();
 
     if (error) {
-      alert(`No se pudo cerrar la sesión: ${error.message}`);
+      toast.error(`No se pudo cerrar la sesión: ${error.message}`);
     }
   };
 

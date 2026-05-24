@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { toast } from "sonner";
+import { ESTADO_BADGE_CLASS } from "../lib/recepciones";
 import { supabase } from "../lib/supabase";
 
 const camposRecepcion = [
   { label: "Número de formulario", key: "numero_formulario" },
   { label: "Fecha de ingreso", key: "fecha_ingreso" },
+  {
+    label: "Estado",
+    key: "estado",
+    format: (value) => value || "-",
+    badgeClass: (value) => ESTADO_BADGE_CLASS[value],
+  },
   { label: "Cliente", key: "cliente" },
   { label: "Dirección", key: "direccion" },
   { label: "CUIT / DNI", key: "cuit" },
@@ -101,7 +109,7 @@ function DetalleRecepcion() {
     e.preventDefault();
 
     if (!destinatario.trim()) {
-      alert("Ingresá un email de destino.");
+      toast.warning("Ingresá un email de destino.");
       return;
     }
 
@@ -118,16 +126,16 @@ function DetalleRecepcion() {
 
     if (error) {
       console.error("Error al enviar email:", error);
-      alert("No se pudo enviar el mail. Revisá que la Edge Function esté desplegada y configurada.");
+      toast.error("No se pudo enviar el mail. Revisá que la Edge Function esté desplegada y configurada.");
       return;
     }
 
     if (data?.error) {
-      alert(data.error);
+      toast.error(data.error);
       return;
     }
 
-    alert("Recepción enviada por mail correctamente.");
+    toast.success("Recepción enviada por mail correctamente.");
   };
 
   return (
@@ -175,9 +183,9 @@ function DetalleRecepcion() {
 
       <div className="print-grid">
         {camposRecepcion.map((campo) => {
-          const value = campo.format
-            ? campo.format(recepcion[campo.key])
-            : recepcion[campo.key];
+          const raw = recepcion[campo.key];
+          const value = campo.format ? campo.format(raw) : raw;
+          const badgeClass = campo.badgeClass ? campo.badgeClass(raw) : null;
 
           return (
             <section
@@ -185,7 +193,13 @@ function DetalleRecepcion() {
               className={`print-field${campo.fullWidth ? " print-field-full" : ""}`}
             >
               <span>{campo.label}</span>
-              <strong>{value || "-"}</strong>
+              {badgeClass ? (
+                <strong>
+                  <span className={`estado-badge ${badgeClass}`}>{value || "-"}</span>
+                </strong>
+              ) : (
+                <strong>{value || "-"}</strong>
+              )}
             </section>
           );
         })}

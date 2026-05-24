@@ -1,40 +1,48 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import RecepcionForm from "../components/RecepcionForm";
-import {
-  crearFormularioRecepcionInicial,
-  mapFormDataToRecepcionPayload,
-} from "../lib/recepciones";
+import { mapFormDataToRecepcionPayload } from "../lib/recepciones";
+import { useFormRecepcion } from "../lib/useFormRecepcion";
 import { supabase } from "../lib/supabase";
 
 function NuevaRecepcion() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState(crearFormularioRecepcionInicial());
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-
-    setFormData((currentFormData) => ({
-      ...currentFormData,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
+  const { formData, handleChange } = useFormRecepcion();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { error } = await supabase
+    const { data: savedData, error } = await supabase
       .from("recepciones")
-      .insert([mapFormDataToRecepcionPayload(formData)]);
+      .insert([mapFormDataToRecepcionPayload(formData)])
+      .select("id")
+      .single();
 
     if (error) {
       console.error("Error al guardar:", error);
-      alert(`Error al guardar: ${error.message}`);
+      toast.error(`Error al guardar: ${error.message}`);
       return;
     }
 
-    alert("Recepción guardada correctamente");
+    toast.success("Recepción guardada correctamente");
     navigate("/");
+
+    if (formData.email.trim()) {
+      supabase.functions
+        .invoke("send-recepcion-email", {
+          body: { recepcionId: savedData.id, destinatario: formData.email.trim() },
+        })
+        .then(({ error: emailError }) => {
+          if (emailError) {
+            toast.error("La recepción fue guardada pero no se pudo enviar el email al cliente");
+          } else {
+            toast.success(`Email de confirmación enviado a ${formData.email.trim()}`);
+          }
+        })
+        .catch(() => {
+          toast.error("La recepción fue guardada pero no se pudo enviar el email al cliente");
+        });
+    }
   };
 
   return (

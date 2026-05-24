@@ -1,24 +1,22 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import RecepcionForm from "../components/RecepcionForm";
-import {
-  crearFormularioRecepcionInicial,
-  mapFormDataToRecepcionPayload,
-  mapRecepcionToFormData,
-} from "../lib/recepciones";
+import { mapFormDataToRecepcionPayload, mapRecepcionToFormData } from "../lib/recepciones";
+import { useFormRecepcion } from "../lib/useFormRecepcion";
 import { supabase } from "../lib/supabase";
 
 function EditarRecepcion() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState(crearFormularioRecepcionInicial());
+  const { formData, setFormData, handleChange } = useFormRecepcion();
   const [cargando, setCargando] = useState(true);
-  const [noEncontrada, setNoEncontrada] = useState(false);
+  const [errorCarga, setErrorCarga] = useState("");
 
   useEffect(() => {
     const cargarRecepcion = async () => {
       setCargando(true);
-      setNoEncontrada(false);
+      setErrorCarga("");
 
       const { data, error } = await supabase
         .from("recepciones")
@@ -28,13 +26,13 @@ function EditarRecepcion() {
 
       if (error) {
         console.error("Error al cargar la recepción:", error);
-        setNoEncontrada(true);
+        setErrorCarga("No se pudo cargar la recepción.");
         setCargando(false);
         return;
       }
 
       if (!data) {
-        setNoEncontrada(true);
+        setErrorCarga("Recepción no encontrada.");
         setCargando(false);
         return;
       }
@@ -44,16 +42,7 @@ function EditarRecepcion() {
     };
 
     cargarRecepcion();
-  }, [id]);
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-
-    setFormData((currentFormData) => ({
-      ...currentFormData,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
+  }, [id, setFormData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,21 +54,16 @@ function EditarRecepcion() {
 
     if (error) {
       console.error("Error al actualizar:", error);
-      alert(`Error al actualizar: ${error.message}`);
+      toast.error(`Error al actualizar: ${error.message}`);
       return;
     }
 
-    alert("Recepción actualizada correctamente");
+    toast.success("Recepción actualizada correctamente");
     navigate("/");
   };
 
-  if (cargando) {
-    return <p>Cargando recepción...</p>;
-  }
-
-  if (noEncontrada) {
-    return <p>Recepción no encontrada.</p>;
-  }
+  if (cargando) return <p>Cargando recepción...</p>;
+  if (errorCarga) return <p>{errorCarga}</p>;
 
   return (
     <div>

@@ -1,5 +1,21 @@
 const pad = (value) => String(value).padStart(2, "0");
 
+export const ESTADOS_RECEPCION = [
+  "Recibido",
+  "En diagnóstico",
+  "Esperando repuesto",
+  "Listo para retirar",
+  "Entregado",
+];
+
+export const ESTADO_BADGE_CLASS = {
+  "Recibido": "badge-recibido",
+  "En diagnóstico": "badge-diagnostico",
+  "Esperando repuesto": "badge-esperando",
+  "Listo para retirar": "badge-listo",
+  "Entregado": "badge-entregado",
+};
+
 export const generarNumeroFormulario = (date = new Date()) => {
   const dia = pad(date.getDate());
   const mes = pad(date.getMonth() + 1);
@@ -7,8 +23,9 @@ export const generarNumeroFormulario = (date = new Date()) => {
   const horas = pad(date.getHours());
   const minutos = pad(date.getMinutes());
   const segundos = pad(date.getSeconds());
+  const milis = String(date.getMilliseconds()).padStart(3, "0");
 
-  return `${dia}${mes}${anio}${horas}${minutos}${segundos}`;
+  return `${dia}${mes}${anio}${horas}${minutos}${segundos}${milis}`;
 };
 
 export const generarTextoDiagnostico = (costo = "") =>
@@ -34,6 +51,7 @@ export const crearFormularioRecepcionInicial = (overrides = {}) => ({
   accesorios: "",
   fallaDenunciada: "",
   estadoGeneral: "",
+  estado: "Recibido",
   ...overrides,
 });
 
@@ -58,6 +76,7 @@ export const mapRecepcionToFormData = (recepcion) =>
     accesorios: recepcion.accesorios ?? "",
     fallaDenunciada: recepcion.falla_denunciada ?? "",
     estadoGeneral: recepcion.estado_general ?? "",
+    estado: recepcion.estado ?? "Recibido",
   });
 
 export const mapFormDataToRecepcionPayload = (formData) => ({
@@ -81,4 +100,5 @@ export const mapFormDataToRecepcionPayload = (formData) => ({
   accesorios: formData.accesorios,
   falla_denunciada: formData.fallaDenunciada,
   estado_general: formData.estadoGeneral,
+  estado: formData.estado,
 });
