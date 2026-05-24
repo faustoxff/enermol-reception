@@ -14,6 +14,7 @@ function EditarRecepcion() {
   const [formData, setFormData] = useState(crearFormularioRecepcionInicial());
   const [cargando, setCargando] = useState(true);
   const [noEncontrada, setNoEncontrada] = useState(false);
+  const [errorCarga, setErrorCarga] = useState("");
 
   useEffect(() => {
     const cargarRecepcion = async () => {
@@ -28,7 +29,7 @@ function EditarRecepcion() {
 
       if (error) {
         console.error("Error al cargar la recepción:", error);
-        setNoEncontrada(true);
+        setErrorCarga("No se pudo cargar la recepción.");
         setCargando(false);
         return;
       }
@@ -75,6 +76,10 @@ function EditarRecepcion() {
 
   if (cargando) {
     return <p>Cargando recepción...</p>;
+  }
+
+  if (errorCarga) {
+    return <p>{errorCarga}</p>;
   }
 
   if (noEncontrada) {

@@ -7,8 +7,9 @@ export const generarNumeroFormulario = (date = new Date()) => {
   const horas = pad(date.getHours());
   const minutos = pad(date.getMinutes());
   const segundos = pad(date.getSeconds());
+  const milis = String(date.getMilliseconds()).padStart(3, "0");
 
-  return `${dia}${mes}${anio}${horas}${minutos}${segundos}`;
+  return `${dia}${mes}${anio}${horas}${minutos}${segundos}${milis}`;
 };
 
 export const generarTextoDiagnostico = (costo = "") =>

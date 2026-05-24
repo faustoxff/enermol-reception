@@ -7,6 +7,13 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+const escapeHtml = (str: string) =>
+  str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+
 const formatValue = (value: unknown) => {
   if (value === null || value === undefined || value === "") {
     return "-";
@@ -16,7 +23,7 @@ const formatValue = (value: unknown) => {
     return value ? "Si" : "No";
   }
 
-  return String(value);
+  return escapeHtml(String(value));
 };
 
 const buildRecepcionHtml = (recepcion: Record<string, unknown>) => {

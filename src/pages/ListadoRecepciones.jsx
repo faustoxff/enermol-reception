@@ -2,75 +2,39 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 
+const fetchRecepciones = () =>
+  supabase
+    .from("recepciones")
+    .select("id, numero_formulario, fecha_ingreso, cliente, equipo, falla_denunciada")
+    .order("id", { ascending: false });
+
 function ListadoRecepciones() {
   const [recepciones, setRecepciones] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [cargando, setCargando] = useState(true);
   const [errorCarga, setErrorCarga] = useState("");
 
-  const consultarRecepciones = async () => {
-    const { data, error } = await supabase
-      .from("recepciones")
-      .select("*")
-      .order("id", { ascending: false });
-
-    return { data, error };
-  };
-
-  const cargarRecepciones = async ({ mostrarCarga = false } = {}) => {
-    if (mostrarCarga) {
-      setCargando(true);
-    }
-
-    setErrorCarga("");
-
-    const { data, error } = await consultarRecepciones();
-
+  const aplicarResultado = ({ data, error }) => {
     if (error) {
       console.error("Error al cargar:", error);
       setErrorCarga("No se pudieron cargar las recepciones.");
-      setCargando(false);
-      return;
+    } else {
+      setErrorCarga("");
+      setRecepciones(data ?? []);
     }
-
-    setRecepciones(data ?? []);
     setCargando(false);
   };
 
   useEffect(() => {
     let activo = true;
-
-    const cargarInicial = async () => {
-      const { data, error } = await consultarRecepciones();
-
-      if (!activo) {
-        return;
-      }
-
-      if (error) {
-        console.error("Error al cargar:", error);
-        setErrorCarga("No se pudieron cargar las recepciones.");
-        setCargando(false);
-        return;
-      }
-
-      setRecepciones(data ?? []);
-      setCargando(false);
-    };
-
-    cargarInicial();
-
-    return () => {
-      activo = false;
-    };
+    fetchRecepciones().then((result) => {
+      if (activo) aplicarResultado(result);
+    });
+    return () => { activo = false; };
   }, []);
 
   const eliminarRecepcion = async (id) => {
-    const confirmarEliminacion = window.confirm(
-      "¿Estás seguro de que querés eliminar esta recepción?",
-    );
-
-    if (!confirmarEliminacion) {
+    if (!window.confirm("¿Estás seguro de que querés eliminar esta recepción?")) {
       return;
     }
 
@@ -85,7 +49,7 @@ function ListadoRecepciones() {
       return;
     }
 
-    cargarRecepciones();
+    aplicarResultado(await fetchRecepciones());
   };
 
   const terminoBusqueda = busqueda.trim().toLowerCase();
