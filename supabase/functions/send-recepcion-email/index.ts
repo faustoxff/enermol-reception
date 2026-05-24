@@ -30,6 +30,7 @@ const buildRecepcionHtml = (recepcion: Record<string, unknown>) => {
   const fields = [
     ["Numero de formulario", recepcion.numero_formulario],
     ["Fecha de ingreso", recepcion.fecha_ingreso],
+    ["Estado", recepcion.estado],
     ["Cliente", recepcion.cliente],
     ["Direccion", recepcion.direccion],
     ["CUIT / DNI", recepcion.cuit],

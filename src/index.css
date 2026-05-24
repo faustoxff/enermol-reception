@@ -181,23 +181,117 @@ h2 {
   padding-left: 12px;
 }
 
-.buscador-listado {
+/* FILTROS */
+.filtros-listado {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-bottom: 18px;
+  align-items: center;
 }
 
-.buscador-listado input {
-  width: 100%;
-  max-width: 460px;
-  padding: 12px 14px;
+.filtro-busqueda {
+  flex: 1 1 240px;
+  padding: 11px 14px;
   font-size: 15px;
   border-radius: 10px;
   border: 1px solid var(--border);
   outline: none;
+  min-width: 0;
 }
 
-.buscador-listado input:focus {
+.filtro-busqueda:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(215, 38, 46, 0.12);
+}
+
+.filtro-select {
+  padding: 11px 14px;
+  font-size: 15px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  outline: none;
+  background: #fff;
+  cursor: pointer;
+}
+
+.filtro-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(215, 38, 46, 0.12);
+}
+
+.filtro-fechas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filtro-fechas input {
+  padding: 11px 12px;
+  font-size: 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  outline: none;
+  background: #fff;
+}
+
+.filtro-fechas input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(215, 38, 46, 0.12);
+}
+
+.filtro-fechas span {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.btn-limpiar-filtros {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 8px 4px;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+.btn-limpiar-filtros:hover {
+  color: var(--primary-dark);
+}
+
+/* ESTADO BADGES */
+.estado-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badge-recibido    { background: #e5e7eb; color: #374151; }
+.badge-diagnostico { background: #dbeafe; color: #1d4ed8; }
+.badge-esperando   { background: #fef3c7; color: #92400e; }
+.badge-listo       { background: #d1fae5; color: #065f46; }
+.badge-entregado   { background: #f3f4f6; color: #9ca3af; }
+
+/* PAGINACION */
+.paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.paginacion-info {
+  font-size: 14px;
+  color: var(--muted);
+  white-space: nowrap;
 }
 
 /* FORMULARIOS */

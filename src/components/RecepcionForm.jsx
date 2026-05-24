@@ -1,4 +1,4 @@
-import { generarTextoDiagnostico } from "../lib/recepciones";
+import { generarTextoDiagnostico, ESTADOS_RECEPCION } from "../lib/recepciones";
 
 function RecepcionForm({
   formData,
@@ -29,6 +29,15 @@ function RecepcionForm({
           onChange={onChange}
           required
         />
+      </label>
+
+      <label className="campo-etiquetado">
+        <span>Estado</span>
+        <select name="estado" value={formData.estado} onChange={onChange}>
+          {ESTADOS_RECEPCION.map((e) => (
+            <option key={e} value={e}>{e}</option>
+          ))}
+        </select>
       </label>
 
       <label className="campo-etiquetado">
