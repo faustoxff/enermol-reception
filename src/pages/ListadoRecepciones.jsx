@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { ESTADOS_RECEPCION, ESTADO_BADGE_CLASS } from "../lib/recepciones";
@@ -6,40 +6,48 @@ import { supabase } from "../lib/supabase";
 
 const PAGE_SIZE = 20;
 
-const FILTROS_INICIAL = {
+const ESTADO_INICIAL = {
   busqueda: "",
   busquedaAplicada: "",
-  estado: "",
+  filtroEstado: "",
   fechaDesde: "",
   fechaHasta: "",
   pagina: 0,
   refreshKey: 0,
+  recepciones: [],
+  total: 0,
+  cargando: true,
+  errorCarga: "",
 };
 
-const filtrosReducer = (state, action) => {
+const reducer = (state, action) => {
   switch (action.type) {
     case "SET_BUSQUEDA":
       return { ...state, busqueda: action.value };
     case "APLICAR_BUSQUEDA":
-      return { ...state, busquedaAplicada: action.value, pagina: 0 };
-    case "SET_ESTADO":
-      return { ...state, estado: action.value, pagina: 0 };
+      return { ...state, busquedaAplicada: action.value, pagina: 0, cargando: true };
+    case "SET_FILTRO_ESTADO":
+      return { ...state, filtroEstado: action.value, pagina: 0, cargando: true };
     case "SET_FECHA_DESDE":
-      return { ...state, fechaDesde: action.value, pagina: 0 };
+      return { ...state, fechaDesde: action.value, pagina: 0, cargando: true };
     case "SET_FECHA_HASTA":
-      return { ...state, fechaHasta: action.value, pagina: 0 };
+      return { ...state, fechaHasta: action.value, pagina: 0, cargando: true };
     case "SET_PAGINA":
-      return { ...state, pagina: action.value };
+      return { ...state, pagina: action.value, cargando: true };
     case "LIMPIAR":
-      return { ...FILTROS_INICIAL, refreshKey: state.refreshKey + 1 };
+      return { ...ESTADO_INICIAL, refreshKey: state.refreshKey + 1 };
     case "REFRESH":
-      return { ...state, pagina: 0, refreshKey: state.refreshKey + 1 };
+      return { ...state, pagina: 0, refreshKey: state.refreshKey + 1, cargando: true };
+    case "SET_RESULTADO":
+      return action.error
+        ? { ...state, cargando: false, errorCarga: "No se pudieron cargar las recepciones." }
+        : { ...state, cargando: false, errorCarga: "", recepciones: action.data ?? [], total: action.count ?? 0 };
     default:
       return state;
   }
 };
 
-const fetchRecepciones = ({ pagina, busquedaAplicada, estado, fechaDesde, fechaHasta }) => {
+const fetchRecepciones = ({ pagina, busquedaAplicada, filtroEstado, fechaDesde, fechaHasta }) => {
   let query = supabase
     .from("recepciones")
     .select("id, numero_formulario, fecha_ingreso, cliente, equipo, falla_denunciada, estado", { count: "exact" })
@@ -50,23 +58,21 @@ const fetchRecepciones = ({ pagina, busquedaAplicada, estado, fechaDesde, fechaH
     query = query.or(
       `numero_formulario.ilike.%${busquedaAplicada}%,cliente.ilike.%${busquedaAplicada}%,equipo.ilike.%${busquedaAplicada}%,falla_denunciada.ilike.%${busquedaAplicada}%`
     );
-  if (estado)     query = query.eq("estado", estado);
-  if (fechaDesde) query = query.gte("fecha_ingreso", fechaDesde);
-  if (fechaHasta) query = query.lte("fecha_ingreso", fechaHasta);
+  if (filtroEstado) query = query.eq("estado", filtroEstado);
+  if (fechaDesde)   query = query.gte("fecha_ingreso", fechaDesde);
+  if (fechaHasta)   query = query.lte("fecha_ingreso", fechaHasta);
 
   return query;
 };
 
 function ListadoRecepciones() {
-  const [filtros, dispatch] = useReducer(filtrosReducer, FILTROS_INICIAL);
-  const [recepciones, setRecepciones] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [cargando, setCargando] = useState(true);
-  const [errorCarga, setErrorCarga] = useState("");
+  const [state, dispatch] = useReducer(reducer, ESTADO_INICIAL);
+  const {
+    busqueda, busquedaAplicada, filtroEstado, fechaDesde, fechaHasta,
+    pagina, refreshKey, recepciones, total, cargando, errorCarga,
+  } = state;
 
-  const { busqueda, busquedaAplicada, estado, fechaDesde, fechaHasta, pagina, refreshKey } = filtros;
-
-  // Debounce búsqueda
+  // Debounce búsqueda — la acción setea cargando:true cuando aplica
   useEffect(() => {
     const timer = setTimeout(() => {
       dispatch({ type: "APLICAR_BUSQUEDA", value: busqueda.trim() });
@@ -74,26 +80,17 @@ function ListadoRecepciones() {
     return () => clearTimeout(timer);
   }, [busqueda]);
 
-  // Fetch principal — sin setCargando(true) en el body del efecto
+  // Fetch principal — cargando:true ya fue seteado por la acción que cambió los deps
   useEffect(() => {
     let activo = true;
-
-    fetchRecepciones({ pagina, busquedaAplicada, estado, fechaDesde, fechaHasta })
+    fetchRecepciones({ pagina, busquedaAplicada, filtroEstado, fechaDesde, fechaHasta })
       .then(({ data, error, count }) => {
         if (!activo) return;
-        if (error) {
-          console.error("Error al cargar:", error);
-          setErrorCarga("No se pudieron cargar las recepciones.");
-        } else {
-          setErrorCarga("");
-          setRecepciones(data ?? []);
-          setTotal(count ?? 0);
-        }
-        setCargando(false);
+        if (error) console.error("Error al cargar:", error);
+        dispatch({ type: "SET_RESULTADO", data, error, count });
       });
-
     return () => { activo = false; };
-  }, [pagina, busquedaAplicada, estado, fechaDesde, fechaHasta, refreshKey]);
+  }, [pagina, busquedaAplicada, filtroEstado, fechaDesde, fechaHasta, refreshKey]);
 
   const eliminarRecepcion = async (id) => {
     if (!window.confirm("¿Estás seguro de que querés eliminar esta recepción?")) return;
@@ -110,7 +107,7 @@ function ListadoRecepciones() {
     dispatch({ type: "REFRESH" });
   };
 
-  const hayFiltros = busquedaAplicada || estado || fechaDesde || fechaHasta;
+  const hayFiltros = busquedaAplicada || filtroEstado || fechaDesde || fechaHasta;
   const totalPaginas = Math.ceil(total / PAGE_SIZE) || 1;
 
   return (
@@ -127,8 +124,8 @@ function ListadoRecepciones() {
         />
 
         <select
-          value={estado}
-          onChange={(e) => dispatch({ type: "SET_ESTADO", value: e.target.value })}
+          value={filtroEstado}
+          onChange={(e) => dispatch({ type: "SET_FILTRO_ESTADO", value: e.target.value })}
           className="filtro-select"
         >
           <option value="">Todos los estados</option>

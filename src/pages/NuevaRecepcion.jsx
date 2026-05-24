@@ -38,6 +38,9 @@ function NuevaRecepcion() {
           } else {
             toast.success(`Email de confirmación enviado a ${formData.email.trim()}`);
           }
+        })
+        .catch(() => {
+          toast.error("La recepción fue guardada pero no se pudo enviar el email al cliente");
         });
     }
   };
