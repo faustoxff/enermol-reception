@@ -13,7 +13,6 @@ function Layout({ children, userEmail, onSignOut }) {
           <div className="topbar-actions">
             <nav className="main-nav">
               <Link to="/">Seguimiento</Link>
-              <Link to="/nueva">Nueva recepción</Link>
             </nav>
 
             <div className="session-box">

@@ -794,6 +794,32 @@ h2 {
   font-size: 12px;
 }
 
+.kanban-columna-header-acciones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kanban-boton-nueva {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.kanban-boton-nueva:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
 .kanban-INGRESO {
   background: #2563eb;
 }
