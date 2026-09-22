@@ -1,37 +1,55 @@
 import { useState } from "react";
-import { supabase } from "../lib/supabase";
+import { authClient } from "../lib/authClient";
 
-function Login() {
+function Login({ onSesionIniciada }) {
+  const [modo, setModo] = useState("ingresar");
+  const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [cargando, setCargando] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setCargando(true);
+    setError("");
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data, error: errorAuth } =
+      modo === "ingresar"
+        ? await authClient.signIn.email({ email, password })
+        : await authClient.signUp.email({ email, password, name: nombre });
 
     setCargando(false);
 
-    if (error) {
-      alert(`No se pudo iniciar sesión: ${error.message}`);
+    if (errorAuth) {
+      setError(errorAuth.message || "No se pudo completar la operación.");
+      return;
     }
+
+    onSesionIniciada(data);
   };
 
   return (
     <div className="auth-shell">
       <div className="auth-card">
         <p className="auth-kicker">ENERMOL</p>
-        <h1>Ingreso al panel</h1>
+        <h1>{modo === "ingresar" ? "Ingreso al panel" : "Crear cuenta"}</h1>
         <p className="auth-copy">
-          Iniciá sesión con tu usuario administrador para acceder al sistema de recepciones.
+          {modo === "ingresar"
+            ? "Iniciá sesión con tu usuario administrador para acceder al sistema de recepciones."
+            : "Creá el usuario administrador del panel."}
         </p>
 
         <form className="auth-form" onSubmit={handleSubmit}>
+          {modo === "crear" && (
+            <input
+              type="text"
+              placeholder="Nombre"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              required
+            />
+          )}
           <input
             type="email"
             placeholder="Correo electrónico"
@@ -46,10 +64,28 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          {error && <p className="auth-error">{error}</p>}
           <button type="submit" disabled={cargando}>
-            {cargando ? "Ingresando..." : "Ingresar"}
+            {cargando
+              ? "Procesando..."
+              : modo === "ingresar"
+                ? "Ingresar"
+                : "Crear cuenta"}
           </button>
         </form>
+
+        <button
+          type="button"
+          className="auth-alternar"
+          onClick={() => {
+            setError("");
+            setModo(modo === "ingresar" ? "crear" : "ingresar");
+          }}
+        >
+          {modo === "ingresar"
+            ? "¿Primera vez? Crear el usuario administrador"
+            : "Ya tengo cuenta, ingresar"}
+        </button>
       </div>
     </div>
   );

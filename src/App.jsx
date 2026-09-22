@@ -2,60 +2,61 @@ import { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/layouts/Layout";
 import NuevaRecepcion from "./pages/NuevaRecepcion";
-import ListadoRecepciones from "./pages/ListadoRecepciones";
+import SeguimientoRecepciones from "./pages/SeguimientoRecepciones";
 import EditarRecepcion from "./pages/EditarRecepcion";
 import DetalleRecepcion from "./pages/DetalleRecepcion";
 import Login from "./pages/Login";
-import { supabase } from "./lib/supabase";
+import { authClient } from "./lib/authClient";
 
 function App() {
   const [session, setSession] = useState(null);
   const [cargandoSesion, setCargandoSesion] = useState(true);
 
+  const refrescarSesion = async () => {
+    const { data } = await authClient.getSession();
+    setSession(data ?? null);
+    setCargandoSesion(false);
+  };
+
   useEffect(() => {
-    const cargarSesion = async () => {
-      const {
-        data: { session: currentSession },
-      } = await supabase.auth.getSession();
+    let activo = true;
 
-      setSession(currentSession);
-      setCargandoSesion(false);
-    };
-
-    cargarSesion();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      setSession(nextSession);
+    authClient.getSession().then(({ data }) => {
+      if (!activo) {
+        return;
+      }
+      setSession(data ?? null);
       setCargandoSesion(false);
     });
 
     return () => {
-      subscription.unsubscribe();
+      activo = false;
     };
   }, []);
 
   const cerrarSesion = async () => {
-    const { error } = await supabase.auth.signOut();
+    const { error } = await authClient.signOut();
 
     if (error) {
       alert(`No se pudo cerrar la sesión: ${error.message}`);
+      return;
     }
+
+    setSession(null);
   };
 
   if (cargandoSesion) {
     return <p className="auth-status">Verificando sesión...</p>;
   }
 
-  if (!session) {
-    return <Login />;
+  if (!session?.user) {
+    return <Login onSesionIniciada={refrescarSesion} />;
   }
 
   return (
     <Layout userEmail={session.user?.email} onSignOut={cerrarSesion}>
       <Routes>
-        <Route path="/" element={<ListadoRecepciones />} />
+        <Route path="/" element={<SeguimientoRecepciones />} />
         <Route path="/nueva" element={<NuevaRecepcion />} />
         <Route path="/editar/:id" element={<EditarRecepcion />} />
         <Route path="/recepcion/:id" element={<DetalleRecepcion />} />

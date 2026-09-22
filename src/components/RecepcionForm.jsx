@@ -1,4 +1,4 @@
-import { generarTextoDiagnostico } from "../lib/recepciones";
+import { generarTextoDiagnostico, SEGMENTOS } from "../lib/recepciones";
 
 function RecepcionForm({
   formData,
@@ -101,16 +101,33 @@ function RecepcionForm({
         </select>
       </label>
 
-      <input
-        name="segmento"
-        placeholder="Segmento"
-        value={formData.segmento}
-        onChange={onChange}
-      />
+      <label className="campo-etiquetado">
+        <span>Segmento</span>
+        <select name="segmento" value={formData.segmento} onChange={onChange}>
+          <option value="">Seleccionar...</option>
+          {SEGMENTOS.map((segmento) => (
+            <option key={segmento} value={segmento}>
+              {segmento}
+            </option>
+          ))}
+        </select>
+      </label>
       <input
         name="equipo"
         placeholder="Equipo"
         value={formData.equipo}
+        onChange={onChange}
+      />
+      <input
+        name="modeloCodigo"
+        placeholder="Modelo / Código de equipo"
+        value={formData.modeloCodigo}
+        onChange={onChange}
+      />
+      <input
+        name="numeroSerie"
+        placeholder="N° de serie"
+        value={formData.numeroSerie}
         onChange={onChange}
       />
       <input

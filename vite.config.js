@@ -8,4 +8,11 @@ export default defineConfig({
     react(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  server: {
+    proxy: {
+      // Las funciones serverless (/api) corren aparte con `vercel dev`
+      // en el puerto 3000; ver README/notas de desarrollo local.
+      '/api': 'http://localhost:3000',
+    },
+  },
 })

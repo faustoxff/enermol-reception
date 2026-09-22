@@ -12,7 +12,29 @@ export const generarNumeroFormulario = (date = new Date()) => {
 };
 
 export const generarTextoDiagnostico = (costo = "") =>
-  `Si la reparación no está cubierta por la garantía de fábrica (por mal uso o vencimiento), el servicio de diagnóstico tendrá un costo de ${costo || "[X pesos]"}, que deberá abonarse para poder retirar la máquina. En caso de que el cliente acepte la reparación, el costo de los repuestos utilizados se cobrará por separado y como un gasto adicional.`;
+  `Si la reparación no está cubierta por la garantía de fábrica (por mal uso o vencimiento), el servicio de diagnóstico tendrá un costo de ${costo ? `$${costo}` : "[X pesos]"}, que deberá abonarse para poder retirar la máquina. En caso de que el cliente acepte la reparación, el costo de los repuestos utilizados se cobrará por separado y como un gasto adicional.`;
+
+export const SEGMENTOS = ["EXPLOSIÓN", "ELÉCTRICA", "A BATERÍA", "DE MANO"];
+
+export const ESTADOS_TALLER = [
+  { value: "INGRESO", label: "Ingreso" },
+  { value: "EN_CURSO", label: "En curso" },
+  { value: "BLOQUEADO", label: "Bloqueado" },
+  { value: "COMPLETADO", label: "Completado" },
+];
+
+export const ESTADOS_TAREA = [
+  { value: "PENDIENTE", label: "Pendiente" },
+  { value: "EN_CURSO", label: "En curso" },
+  { value: "HECHO", label: "Hecho" },
+];
+
+export const crearTarea = (texto) => ({
+  id: Date.now() + Math.random(),
+  texto,
+  estado: "PENDIENTE",
+  nota: "",
+});
 
 export const crearFormularioRecepcionInicial = (overrides = {}) => ({
   numeroFormulario: generarNumeroFormulario(),
@@ -31,9 +53,12 @@ export const crearFormularioRecepcionInicial = (overrides = {}) => ({
   observaciones: "",
   segmento: "",
   equipo: "",
+  modeloCodigo: "",
+  numeroSerie: "",
   accesorios: "",
   fallaDenunciada: "",
   estadoGeneral: "",
+  estadoTaller: "INGRESO",
   ...overrides,
 });
 
@@ -55,9 +80,12 @@ export const mapRecepcionToFormData = (recepcion) =>
     observaciones: recepcion.observaciones ?? "",
     segmento: recepcion.segmento ?? "",
     equipo: recepcion.equipo ?? "",
+    modeloCodigo: recepcion.modelo_codigo ?? "",
+    numeroSerie: recepcion.numero_serie ?? "",
     accesorios: recepcion.accesorios ?? "",
     fallaDenunciada: recepcion.falla_denunciada ?? "",
     estadoGeneral: recepcion.estado_general ?? "",
+    estadoTaller: recepcion.estado_taller ?? "INGRESO",
   });
 
 export const mapFormDataToRecepcionPayload = (formData) => ({
@@ -78,7 +106,10 @@ export const mapFormDataToRecepcionPayload = (formData) => ({
   observaciones: formData.observaciones,
   segmento: formData.segmento,
   equipo: formData.equipo,
+  modelo_codigo: formData.modeloCodigo,
+  numero_serie: formData.numeroSerie,
   accesorios: formData.accesorios,
   falla_denunciada: formData.fallaDenunciada,
   estado_general: formData.estadoGeneral,
+  estado_taller: formData.estadoTaller || "INGRESO",
 });

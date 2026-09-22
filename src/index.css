@@ -164,12 +164,14 @@ a {
 }
 
 /* TARJETA PRINCIPAL */
-.container > div {
+.container > div,
+.container > p {
   background: var(--white);
   border-radius: 14px;
   box-shadow: var(--shadow);
   padding: 28px;
   border: 1px solid rgba(0, 0, 0, 0.04);
+  margin: 0;
 }
 
 h2 {
@@ -533,6 +535,29 @@ h2 {
   background: var(--primary-dark);
 }
 
+.auth-error {
+  margin: 0;
+  color: var(--primary-dark);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.auth-alternar {
+  width: 100%;
+  margin-top: 16px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.auth-alternar:hover {
+  color: var(--dark);
+}
+
 .auth-status {
   min-height: 100vh;
   display: grid;
@@ -632,6 +657,54 @@ h2 {
   word-break: break-word;
 }
 
+.print-protocolo {
+  min-width: 220px;
+  max-width: 260px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  background: #fafafa;
+  flex-shrink: 0;
+}
+
+.print-protocolo-titulo {
+  margin: 0 0 6px 0;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--dark);
+}
+
+.print-protocolo ul {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.print-protocolo li {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.print-qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.print-qr img {
+  width: 90px;
+  height: 90px;
+}
+
+.print-qr span {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-align: center;
+}
+
 .print-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -647,6 +720,333 @@ h2 {
 
 .print-field-full {
   grid-column: 1 / -1;
+}
+
+/* KANBAN SEGUIMIENTO */
+.seguimiento-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.seguimiento-toolbar h2 {
+  margin-bottom: 0;
+}
+
+
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.kanban-columna {
+  background: #fafafa;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+  min-height: 200px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.kanban-columna-activa-INGRESO {
+  background: #eff6ff;
+  border-color: #2563eb;
+}
+
+.kanban-columna-activa-EN_CURSO {
+  background: #fffbeb;
+  border-color: #d97706;
+}
+
+.kanban-columna-activa-BLOQUEADO {
+  background: #fff1f2;
+  border-color: var(--primary);
+}
+
+.kanban-columna-activa-COMPLETADO {
+  background: #f0fdf4;
+  border-color: #16a34a;
+}
+
+.kanban-columna-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 12px;
+  color: var(--white);
+}
+
+.kanban-contador {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  padding: 2px 9px;
+  font-size: 12px;
+}
+
+.kanban-INGRESO {
+  background: #2563eb;
+}
+
+.kanban-EN_CURSO {
+  background: #d97706;
+}
+
+.kanban-BLOQUEADO {
+  background: var(--primary);
+}
+
+.kanban-COMPLETADO {
+  background: #16a34a;
+}
+
+.kanban-tarjetas {
+  display: grid;
+  gap: 10px;
+}
+
+.kanban-vacio {
+  color: var(--muted);
+  font-size: 13px;
+  padding: 8px 4px;
+}
+
+.kanban-tarjeta {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+}
+
+.kanban-tarjeta-top {
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: grab;
+  touch-action: none;
+}
+
+.kanban-tarjeta-arrastrando {
+  opacity: 0.6;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.15);
+  cursor: grabbing;
+}
+
+.kanban-arrastrar {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.kanban-equipo {
+  display: block;
+  color: var(--dark);
+  line-height: 1.35;
+}
+
+.kanban-cliente {
+  margin: 4px 0 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.kanban-falla {
+  margin: 6px 0 0 0;
+  font-size: 13px;
+  color: var(--dark);
+}
+
+.kanban-acciones {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.kanban-ver {
+  flex: 1;
+  text-align: center;
+}
+
+.btn-tareas {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px dashed var(--border);
+  background: #fafafa;
+  color: var(--dark);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-tareas:hover {
+  background: #f1f1f1;
+  border-color: var(--muted);
+}
+
+/* MODAL DE TAREAS */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 20, 20, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 50;
+}
+
+.modal-caja {
+  width: min(100%, 560px);
+  max-height: 85vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+  padding: 24px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.modal-header h3 {
+  margin: 2px 0 0 0;
+  font-size: 20px;
+  color: var(--dark);
+}
+
+.modal-kicker {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--primary-dark);
+}
+
+.modal-cerrar {
+  border: none;
+  background: #f1f1f1;
+  color: var(--dark);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.modal-cerrar:hover {
+  background: #e2e2e2;
+}
+
+.modal-tareas-lista {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.tarea-item {
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--muted);
+  border-radius: 10px;
+  padding: 12px;
+  background: #fafafa;
+}
+
+.tarea-PENDIENTE {
+  border-left-color: #6b7280;
+}
+
+.tarea-EN_CURSO {
+  border-left-color: #d97706;
+}
+
+.tarea-HECHO {
+  border-left-color: #16a34a;
+}
+
+.tarea-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.tarea-texto {
+  font-weight: 700;
+  color: var(--dark);
+  line-height: 1.4;
+}
+
+.tarea-eliminar {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.tarea-eliminar:hover {
+  color: var(--primary);
+}
+
+.tarea-item-controles {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tarea-item-controles select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.tarea-item-controles input {
+  flex: 1;
+  min-width: 140px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.modal-tareas-nueva {
+  display: flex;
+  gap: 10px;
+}
+
+.modal-tareas-nueva input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.modal-tareas-nueva button {
+  white-space: nowrap;
 }
 
 /* RESPONSIVE */
@@ -678,12 +1078,17 @@ h2 {
     grid-template-columns: 1fr;
   }
 
-  .container > div {
+  .container > div,
+  .container > p {
     padding: 20px;
   }
 
   .print-grid {
     grid-template-columns: 1fr;
+  }
+
+  .kanban-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .email-panel {
@@ -741,7 +1146,8 @@ h2 {
     padding: 0 12px;
   }
 
-  .container > div {
+  .container > div,
+  .container > p {
     padding: 16px;
     border-radius: 16px;
   }
@@ -753,6 +1159,10 @@ h2 {
 
   .buscador-listado input {
     max-width: none;
+  }
+
+  .kanban-board {
+    grid-template-columns: 1fr;
   }
 
   .tabla-desktop {
@@ -808,7 +1218,8 @@ h2 {
     padding: 0;
   }
 
-  .container > div {
+  .container > div,
+  .container > p {
     box-shadow: none;
     border: none;
     border-radius: 0;
@@ -824,4 +1235,81 @@ h2 {
   .print-badge {
     break-inside: avoid;
   }
+
+  .vista-pantalla {
+    display: none !important;
+  }
+
+  .recibo-impresion {
+    display: block !important;
+  }
+}
+
+/* RECIBO COMPACTO (solo impresión) */
+.recibo-impresion {
+  display: none;
+}
+
+.recibo-copia {
+  padding: 4mm 2mm;
+  break-inside: avoid;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #000;
+}
+
+.recibo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #000;
+  padding-bottom: 2mm;
+  margin-bottom: 2mm;
+}
+
+.recibo-header strong {
+  font-size: 12px;
+}
+
+.recibo-formulario {
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.recibo-qr {
+  width: 36px;
+  height: 36px;
+}
+
+.recibo-lineas p {
+  margin: 0.6mm 0;
+  font-size: 9px;
+  line-height: 1.3;
+}
+
+.recibo-lineas span {
+  font-weight: bold;
+}
+
+.recibo-protocolo {
+  font-size: 8px;
+  color: #333;
+  margin: 2mm 0 0 0;
+  border-top: 1px dotted #999;
+  padding-top: 1.5mm;
+  line-height: 1.4;
+}
+
+.recibo-pie {
+  text-align: right;
+  font-size: 8px;
+  font-style: italic;
+  margin: 1.5mm 0 0 0;
+}
+
+.recibo-corte {
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 1px;
+  margin: 2mm 0;
+  color: #555;
 }

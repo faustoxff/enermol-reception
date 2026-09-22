@@ -1,6 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
+import { remoteDb } from "./remoteDb";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// TODO: renombrar a "db" en todo el proyecto (queda "supabase" por ahora
+// para no tocar cada página; ya no usa Supabase, habla con /api -> Neon).
+export const supabase = remoteDb;

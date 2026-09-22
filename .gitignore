@@ -32,3 +32,5 @@ supabase/.temp
 .env.*
 supabase/.temp
 
+.neon
+.env*

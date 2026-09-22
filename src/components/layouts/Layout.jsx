@@ -12,7 +12,7 @@ function Layout({ children, userEmail, onSignOut }) {
 
           <div className="topbar-actions">
             <nav className="main-nav">
-              <Link to="/">Listado</Link>
+              <Link to="/">Seguimiento</Link>
               <Link to="/nueva">Nueva recepción</Link>
             </nav>
 

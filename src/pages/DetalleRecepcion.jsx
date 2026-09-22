@@ -2,9 +2,16 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 
+const formatearFecha = (valor) => {
+  if (!valor) {
+    return valor;
+  }
+  return new Date(valor).toLocaleDateString("es-AR", { timeZone: "UTC" });
+};
+
 const camposRecepcion = [
   { label: "Número de formulario", key: "numero_formulario" },
-  { label: "Fecha de ingreso", key: "fecha_ingreso" },
+  { label: "Fecha de ingreso", key: "fecha_ingreso", format: formatearFecha },
   { label: "Cliente", key: "cliente" },
   { label: "Dirección", key: "direccion" },
   { label: "CUIT / DNI", key: "cuit" },
@@ -15,7 +22,7 @@ const camposRecepcion = [
     key: "adjunta_factura",
     format: (value) => (value ? "Sí" : "No"),
   },
-  { label: "Fecha de factura", key: "fecha_factura" },
+  { label: "Fecha de factura", key: "fecha_factura", format: formatearFecha },
   { label: "Número de factura", key: "numero_factura" },
   {
     label: "En garantía",
@@ -28,7 +35,11 @@ const camposRecepcion = [
     key: "periodo_garantia",
     format: (value) => (value === "SI" ? "Sí" : "No"),
   },
-  { label: "Costo de diagnóstico", key: "diagnostico_costo" },
+  {
+    label: "Costo de diagnóstico",
+    key: "diagnostico_costo",
+    format: (value) => (value ? `$${value}` : value),
+  },
   {
     label: "Condiciones del diagnóstico",
     key: "condiciones_diagnostico",
@@ -36,6 +47,8 @@ const camposRecepcion = [
   },
   { label: "Segmento", key: "segmento" },
   { label: "Equipo", key: "equipo", fullWidth: true },
+  { label: "Modelo / Código de equipo", key: "modelo_codigo" },
+  { label: "N° de serie", key: "numero_serie" },
   { label: "Accesorios", key: "accesorios" },
   { label: "Falla denunciada", key: "falla_denunciada", fullWidth: true },
   { label: "Estado general", key: "estado_general" },
@@ -161,35 +174,95 @@ function DetalleRecepcion() {
         </div>
       </form>
 
-      <div className="print-header">
-        <div>
-          <p className="print-kicker">ENERMOL</p>
-          <h2>Recepción de equipo</h2>
+      <div className="vista-pantalla">
+        <div className="print-header">
+          <div>
+            <p className="print-kicker">ENERMOL</p>
+            <h2>Recepción de equipo</h2>
+          </div>
+
+          <div className="print-badge">
+            <span>Formulario</span>
+            <strong>{recepcion.numero_formulario || "-"}</strong>
+          </div>
+
+          <div className="print-protocolo">
+            <p className="print-protocolo-titulo">🛠️ Protocolo de Servicio Técnico - Enermol®</p>
+            <ul>
+              <li>Procedimiento de Ingreso y Diagnóstico</li>
+              <li>Costo del Diagnóstico</li>
+              <li>Qué cubre</li>
+              <li>Política de No Reembolso</li>
+              <li>Pedido de Repuestos</li>
+              <li>Políticas de Retiro y Abandono</li>
+            </ul>
+          </div>
+
+          <div className="print-qr">
+            <img src="/qr-enermol.png" alt="Más información de ENERMOL" />
+            <span>Más info de ENERMOL</span>
+          </div>
         </div>
 
-        <div className="print-badge">
-          <span>Formulario</span>
-          <strong>{recepcion.numero_formulario || "-"}</strong>
+        <div className="print-grid">
+          {camposRecepcion.map((campo) => {
+            const value = campo.format
+              ? campo.format(recepcion[campo.key])
+              : recepcion[campo.key];
+
+            return (
+              <section
+                key={campo.key}
+                className={`print-field${campo.fullWidth ? " print-field-full" : ""}`}
+              >
+                <span>{campo.label}</span>
+                <strong>{value || "-"}</strong>
+              </section>
+            );
+          })}
         </div>
       </div>
 
-      <div className="print-grid">
+      <div className="recibo-impresion">
+        <Recibo recepcion={recepcion} copia="Copia cliente" />
+        <p className="recibo-corte">✂- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -✂</p>
+        <Recibo recepcion={recepcion} copia="Copia taller" />
+      </div>
+    </div>
+  );
+}
+
+function Recibo({ recepcion, copia }) {
+  return (
+    <div className="recibo-copia">
+      <div className="recibo-header">
+        <div>
+          <strong>ENERMOL</strong> · Recepción de equipo
+          <div className="recibo-formulario">N° {recepcion.numero_formulario || "-"}</div>
+        </div>
+        <img src="/qr-enermol.png" alt="Más información de ENERMOL" className="recibo-qr" />
+      </div>
+
+      <div className="recibo-lineas">
         {camposRecepcion.map((campo) => {
           const value = campo.format
             ? campo.format(recepcion[campo.key])
             : recepcion[campo.key];
 
           return (
-            <section
-              key={campo.key}
-              className={`print-field${campo.fullWidth ? " print-field-full" : ""}`}
-            >
-              <span>{campo.label}</span>
-              <strong>{value || "-"}</strong>
-            </section>
+            <p key={campo.key}>
+              <span>{campo.label}:</span> {value || "-"}
+            </p>
           );
         })}
       </div>
+
+      <p className="recibo-protocolo">
+        🛠️ Protocolo: Ingreso y Diagnóstico · Costo del Diagnóstico · Qué cubre · No Reembolso ·
+        Pedido de Repuestos · Retiro y Abandono — más info en enermol.com.ar
+      </p>
+
+      <p className="recibo-pie">{copia}</p>
     </div>
   );
 }
